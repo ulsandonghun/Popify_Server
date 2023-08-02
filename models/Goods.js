@@ -1,17 +1,15 @@
 const mongoose = require("mongoose");
 
 const GoodsSchema = new mongoose.Schema({
-    brand_name: {
-
-    },
     goods_name: {
-
+        type: String,
     },
-    goods_img: {
-
-    },
+    goods_imgs: [{
+        type: String,
+    }],
     popup: {
-        // id로 끌어옴
+        type: Schema.Types.ObjectId,
+        ref: 'Popup',
     }
 }, {
     timestamps: true,

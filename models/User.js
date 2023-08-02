@@ -1,6 +1,10 @@
 const mongoose = require("mongoose");
 
 const UserSchema = new mongoose.Schema({
+    admin: {
+        type: Boolean,
+        default: false,
+    },
     user_id: {
         type: String,
         required: true,
@@ -18,10 +22,9 @@ const UserSchema = new mongoose.Schema({
     user_name: {
         type: String,
         required: true,
-        unique: true,
     },
     birth: {
-        type: String,
+        type: Date,
         default: '',
     },
     phone_number: {
