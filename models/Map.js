@@ -1,7 +1,7 @@
 const mongoose = require("mongoose");
 
 const MapSchema = new mongoose.Schema({
-    popup_name: {
+    name: {
         type: String,
         required: true,
     },
@@ -12,6 +12,10 @@ const MapSchema = new mongoose.Schema({
     longitude: {
         type: Number,
         required: true,
+    },
+    popup: {
+        type: Schema.Types.ObjectId,
+        ref: 'Popup',
     },
 });
 
