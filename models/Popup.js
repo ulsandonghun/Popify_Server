@@ -5,9 +5,23 @@ const PopupSchema = new mongoose.Schema({
         type: String,
         default: '',
     },
-    tag: {
+    tags: [{
         type: String,
         default: '',
+    }],
+    corporation: {
+        type: String,
+    },
+    corporation_contact: {
+        type: String,
+    },
+    term: {
+        // 2023-08-03 ~ 2023-08-05
+        type: String,
+    },
+    business_hours: {
+        // 9:00 ~ 18:00
+        type: String,  
     },
     popup_imgs: [{
         type: String,
@@ -24,7 +38,6 @@ const PopupSchema = new mongoose.Schema({
         type: String,
         default: '',
     },
-    // 인스타그램
     map: {
         type: Schema.Types.ObjectId,
         ref: 'Map',
