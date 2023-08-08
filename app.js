@@ -12,7 +12,7 @@ const usersRouter = require('./routes/users');
 const app = express();
 
 // mongoose setup
-mongoose.connect(process.env.MONGO_URL);
+mongoose.connect(process.env.MONGODB_URL);
 
 mongoose.connection.on("connected", () => {
   console.log("Successfully connected to MongoDB");
