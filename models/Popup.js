@@ -1,15 +1,12 @@
 const mongoose = require("mongoose");
 
 const PopupSchema = new mongoose.Schema({
- 
-    tags: [{
-        type: String,
-        default: '',
-    }],
+
     corporation: {
         type: String,
     },
-    corporation_contact: {
+    term: {
+        // 2023-08-03 ~ 2023-08-05
         type: String,
     },
     location:{
@@ -22,17 +19,23 @@ const PopupSchema = new mongoose.Schema({
     free:{
         type: Boolean,
     },
-    term: {
-        // 2023-08-03 ~ 2023-08-05
-        type: String,
-    },
     business_hours: {
         // 9:00 ~ 18:00
         type: String,  
     },
+ 
+    tags: [{
+        type: String,
+        default: '',
+    }],
     popup_imgs: [{
         type: String,
     }],
+    contents: {
+        //비고
+        type: String,
+        default: '',
+    },
     goods: [{
         type: Schema.Types.ObjectId,
         ref: 'Goods',
@@ -41,11 +44,6 @@ const PopupSchema = new mongoose.Schema({
         type: Schema.Types.ObjectId,
         ref: 'Review',
     }],
-    contents: {
-        //비고
-        type: String,
-        default: '',
-    },
     map: {
         type: Schema.Types.ObjectId,
         ref: 'Map',
