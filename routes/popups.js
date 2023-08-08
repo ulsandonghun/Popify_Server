@@ -5,10 +5,10 @@ const Popup = require('../models/Popup');
 // 팝업스토어 전체 목록 조회 API
 router.get('/', async (req, res) => {
     try {
-        const popups = await Popup.find();
-           /* .populate('goods')
+        const popups = await Popup.find()
+           .populate('goods')
             .populate('reviews')
-            .populate('map');*/
+            .populate('map');
 
         res.status(200).json(popups);
     } catch (error) {
