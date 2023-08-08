@@ -1,10 +1,7 @@
 const mongoose = require("mongoose");
 
 const PopupSchema = new mongoose.Schema({
-    title: {
-        type: String,
-        default: '',
-    },
+ 
     tags: [{
         type: String,
         default: '',
@@ -14,6 +11,16 @@ const PopupSchema = new mongoose.Schema({
     },
     corporation_contact: {
         type: String,
+    },
+    location:{
+        type: String,
+
+    },
+    reservation:{
+        type: String,
+    },
+    free:{
+        type: Boolean,
     },
     term: {
         // 2023-08-03 ~ 2023-08-05
@@ -35,6 +42,7 @@ const PopupSchema = new mongoose.Schema({
         ref: 'Review',
     }],
     contents: {
+        //비고
         type: String,
         default: '',
     },
