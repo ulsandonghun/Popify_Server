@@ -1,8 +1,8 @@
 const mongoose = require("mongoose");
 const Schema = mongoose.Schema;
 
-const PopupSchema = new Schema({
-    title: {
+const PopupSchema = new mongoose.Schema({
+
     corporation: {
         //기업명(제목)
         type: String,
@@ -55,7 +55,6 @@ const PopupSchema = new Schema({
     }
 }, {
     timestamps: true,
-    versionKey: false,
 });
 
 module.exports = mongoose.model("Popup", PopupSchema);
