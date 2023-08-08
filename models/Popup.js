@@ -1,8 +1,10 @@
 const mongoose = require("mongoose");
+const Schema = mongoose.Schema;
 
 const PopupSchema = new mongoose.Schema({
 
     corporation: {
+        //기업명(제목)
         type: String,
     },
     term: {
@@ -10,13 +12,16 @@ const PopupSchema = new mongoose.Schema({
         type: String,
     },
     location:{
+        //장소
         type: String,
 
     },
     reservation:{
+        //사전예약 여부
         type: String,
     },
     free:{
+        //무료/유료
         type: Boolean,
     },
     business_hours: {
