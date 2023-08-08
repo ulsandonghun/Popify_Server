@@ -1,4 +1,5 @@
 const mongoose = require("mongoose");
+const Schema = mongoose.Schema;
 
 const ReviewSchema = new mongoose.Schema({
     rate: {
@@ -23,5 +24,6 @@ const ReviewSchema = new mongoose.Schema({
 }, {
     timestamps: true,
 });
+
 
 module.exports = mongoose.model("Review", ReviewSchema);
