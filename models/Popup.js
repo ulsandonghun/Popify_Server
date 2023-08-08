@@ -3,6 +3,9 @@ const Schema = mongoose.Schema;
 
 const PopupSchema = new Schema({
     title: {
+        type: String,
+        default: '',
+    },
     corporation: {
         type: String,
     },
