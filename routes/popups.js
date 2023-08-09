@@ -157,35 +157,35 @@ router.get('/latest', async (req, res) => {
 
 // 팝업스토어 제목으로 검색하는 API
 //제목을 검색하여 최신순으로 반환합니다.
-router.get('/search-by-title/:title', async (req, res) => {
-  const searchTitle = req.params.title;
+router.get('/search', async (req, res) => {
+  const searchCorporation = req.query.corporation;
 
   try {
-      const popups = await Popup.find({ corporation: { $regex: searchTitle, $options: 'i' } })
-          .populate('goods')
-          .populate('reviews')
-          .sort({ createdAt: -1 });
+    const popups = await Popup.find({ corporation: { $regex: searchCorporation, $options: 'i' } })
+      .populate('goods')
+      .populate('reviews')
+      .sort({ createdAt: -1 });
 
-      res.status(200).json(popups);
+    res.status(200).json(popups);
   } catch (error) {
-      res.status(500).json({ error: 'Internal server error' });
+    res.status(500).json({ error: 'Internal server error' });
   }
 });
 
 // 팝업스토어 해시태그로 검색하는 API
-router.get('/search-by-hashtags/:tag', async (req, res) => {
-  const searchTag = req.params.tag;
+router.get('/search', async (req, res) => {
+  const searchTag = req.query.tag; // req.query를 사용하여 URL 파라미터 가져오기
   console.log(searchTag);
 
   try {
-      const popups = await Popup.find({ tags: { $in: [searchTag] } })
-          .populate('goods')
-          .populate('reviews')
-          .sort({ createdAt: -1 });
+    const popups = await Popup.find({ tags: { $in: [searchTag] } })
+      .populate('goods')
+      .populate('reviews')
+      .sort({ createdAt: -1 });
 
-      res.status(200).json(popups);
+    res.status(200).json(popups);
   } catch (error) {
-      res.status(500).json({ error: 'Internal server error' });
+    res.status(500).json({ error: 'Internal server error' });
   }
 });
 
