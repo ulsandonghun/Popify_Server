@@ -50,4 +50,66 @@ router.get('/sort/reviewCount', async (req, res) => {
       res.status(500).json({ error: 'Internal server error' });
   }
 });
+
+// 샘플 데이터 생성 API
+router.post('/create-sample-popup', async (req, res) => {
+  try {
+      const samplePopupData = [{
+          corporation: "빵빵이의 생일파티",
+          term: "2023-08-03 ~ 2023-08-05",
+          location: "장소1",
+          reservation: "사전예약 여부1",
+          free: true,
+          business_hours: "9:00 ~ 18:00",
+          tags: ["태그1", "태그2"],
+          popup_imgs: ["팝업1 이미지 URL1", "팝업1 이미지 URL2"],
+          contents: "팝업스토어 내용1",
+          goods: ["64d1c8e15ae634f300d7f289"], // Goods ObjectId로 수정
+          reviews: ["64d1cb565ae634f300d7f293"], // Review ObjectId로 수정
+          latitude: 37.123456, // 위도
+          longitude: 127.789012, // 경도
+          placeurl: "장소 URL",
+      },{
+        corporation: "여름 바베큐 페스티벌",
+        term: "2023-07-15 ~ 2023-07-20",
+        location: "공원1",
+        reservation: "사전예약 여부2",
+        free: false,
+        business_hours: "12:00 ~ 22:00",
+        tags: ["이벤트", "페스티벌"],
+        popup_imgs: ["페스티벌 이미지 URL1", "페스티벌 이미지 URL2"],
+        contents: "시원한 여름을 맞이하는 바베큐 페스티벌",
+        goods: ["64d1c8e15ae634f300d7f28a", "64d1c8e15ae634f300d7f28b"],
+        reviews: ["64d1cb565ae634f300d7f294"],
+        latitude: 36.987654,
+        longitude: 128.567890,
+        placeurl: "공원 URL",
+      },
+      // 추가 샘플 데이터들...
+      {
+        corporation: "가을 나들이 할인 행사",
+        term: "2023-10-01 ~ 2023-10-15",
+        location: "산1",
+        reservation: "사전예약 여부3",
+        free: true,
+        business_hours: "10:00 ~ 17:00",
+        tags: ["할인", "나들이"],
+        popup_imgs: ["나들이 이미지 URL1", "나들이 이미지 URL2"],
+        contents: "가을의 아름다운 풍경을 즐기는 나들이 할인 행사",
+        goods: ["64d1c8e15ae634f300d7f28c"],
+        reviews: ["64d1cb565ae634f300d7f295"],
+        latitude: 35.789012,
+        longitude: 129.345678,
+        placeurl: "산 URL",
+      },
+
+
+    ];
+
+      const createdPopup = await Popup.create(samplePopupData);
+      res.status(201).json({ message: "Sample Popup Created", popup: createdPopup });
+  } catch (error) {
+      res.status(500).json({ error: 'Internal server error' });
+  }
+});
 module.exports = router;
