@@ -189,6 +189,35 @@ router.get('/search', async (req, res) => {
   }
 });
 
+// 팝업스토어 페이징 조회 API
+router.get('/paging', async (req, res) => {
+  const page = parseInt(req.query.page) || 1;
+  const pageSize = parseInt(req.query.pageSize) || 10;
+
+  try {
+      const totalCount = await Popup.countDocuments();
+      console.log(totalCount);
+
+      const totalPages = Math.ceil(totalCount / pageSize);
+      console.log(totalPages);
+
+      const popups = await Popup.find()
+          .populate('goods')
+          .populate('reviews')
+          .sort({ createdAt: -1 })
+          .skip((page - 1) * pageSize)
+          .limit(pageSize);
+
+      res.status(200).json({
+          currentPage: page,
+          totalPages: totalPages,
+          totalItems: totalCount,
+          popups: popups
+      });
+  } catch (error) {
+      res.status(500).json({ error: 'Internal server error' });
+  }
+});
 
 
 module.exports = router;
