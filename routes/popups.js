@@ -112,4 +112,49 @@ router.post('/create-sample-popup', async (req, res) => {
       res.status(500).json({ error: 'Internal server error' });
   }
 });
+
+
+// 샘플 데이터 생성 API
+router.post('/create-one-sample', async (req, res) => {
+  try {
+      const samplePopupData = [{
+          corporation: "빵빵이의 뿡뿡이",
+          term: "2023-08-03 ~ 2023-08-05",
+          location: "장소1",
+          reservation: "사전예약 여부1",
+          free: true,
+          business_hours: "9:00 ~ 18:00",
+          tags: ["태그1", "태그2"],
+          popup_imgs: ["팝업1 이미지 URL1", "팝업1 이미지 URL2"],
+          contents: "팝업스토어 내용1",
+          goods: ["64d1c8e15ae634f300d7f289"], // Goods ObjectId로 수정
+          reviews: ["64d1cb565ae634f300d7f293"], // Review ObjectId로 수정
+          latitude: 37.123456, // 위도
+          longitude: 127.789012, // 경도
+          placeurl: "장소 URL",
+      }
+    ];
+
+      const createdPopup = await Popup.create(samplePopupData);
+      res.status(201).json({ message: "Sample Popup Created", popup: createdPopup });
+  } catch (error) {
+      res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
+router.get('/latest', async (req, res) => {
+  try {
+      const popups = await Popup.find()
+          .populate('goods')
+          .populate('reviews')
+          .sort({ createdAt: -1 });
+
+      res.status(200).json(popups);
+  } catch (error) {
+      res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
+
+
 module.exports = router;
