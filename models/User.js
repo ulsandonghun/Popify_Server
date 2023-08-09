@@ -11,7 +11,7 @@ const UserSchema = new Schema({
         type: String,
         required: true,
     },
-    isDeleted: {
+    is_deleted: {
         type: Boolean,
         default: false,
     }

@@ -4,15 +4,15 @@ const jwt = require('jsonwebtoken');
 
 const User = require('../models/User');
 
-const async_handler = require('../utils/async-handler');
-const hash_password = require('../utils/hash-password');
-const jwt_util = require('../utils/jwt-util');
-const redis_client = require('../utils/redis');
+const asyncHandler = require('../utils/async-handler');
+const hashPassword = require('../utils/hash-password');
+const jwtUtil = require('../utils/jwt-util');
+const redisClient = require('../utils/redis');
 
-const auth_jwt = require('../middlewares/authJWT');
+const authJWT = require('../middlewares/authJWT');
 
 /* 회원가입 */
-router.post('/signup', async_handler(async (req, res) => {
+router.post('/signup', asyncHandler(async (req, res) => {
   let { user_id, password } = req.body;
 
   // 필수 입력 확인
@@ -26,7 +26,7 @@ router.post('/signup', async_handler(async (req, res) => {
   // 앞뒤 공백 제거
   user_id = user_id.trim();
   password = password.trim();
-  const hashed_password = hash_password(password);
+  const hashed_password = hashPassword(password);
 
   // 공백 방지
   if (!user_id) {
@@ -37,7 +37,7 @@ router.post('/signup', async_handler(async (req, res) => {
   }
 
   // 아이디 중복 확인
-  if (await User.exists({user_id, isDeleted: false})) {
+  if (await User.exists({user_id, is_deleted: false})) {
     return res.status(409).json({message: "이미 사용 중인 아이디입니다."});
   }
 
@@ -50,10 +50,10 @@ router.post('/signup', async_handler(async (req, res) => {
 }));
 
 /* 아이디 중복 확인 */
-router.get('/id/:user_id/exist', async_handler(async (req, res) => {
+router.get('/id/:user_id/exist', asyncHandler(async (req, res) => {
   const { user_id } = req.params;
 
-  if (await User.exists({user_id, isDeleted: false})) {
+  if (await User.exists({user_id, is_deleted: false})) {
     return res.status(409).json({message: "이미 사용 중인 아이디입니다."});
   }
 
@@ -61,12 +61,12 @@ router.get('/id/:user_id/exist', async_handler(async (req, res) => {
 }));
 
 /* 로그인 */
-router.post('/login'/*, redisSocket*/, async_handler(async (req, res) => {
+router.post('/login'/*, redisSocket*/, asyncHandler(async (req, res) => {
   const { user_id, password } = req.body;
   const user = await User.findOne({
     user_id, 
-    password: hash_password(password), 
-    isDeleted: false
+    password: hashPassword(password), 
+    is_deleted: false
   });
 
   // 필수 입력 확인 + 공백 방지
@@ -82,11 +82,11 @@ router.post('/login'/*, redisSocket*/, async_handler(async (req, res) => {
     return res.status(404).json({error: "아이디 또는 비밀번호가 일치하지 않습니다."});
   }
 
-  const access_token = jwt_util.sign(user_id);
-  const refresh_token = jwt_util.refresh();
+  const access_token = jwtUtil.sign(user_id);
+  const refresh_token = jwtUtil.refresh();
   
   // 발급한 refresh token을 redis에 key를 user의 id로 하여 저장
-  redis_client.set(user_id, refresh_token);
+  redisClient.set(user_id, refresh_token);
   res.json({
     user,
     token: {
@@ -106,7 +106,7 @@ router.get('/refresh'/*, redisSocket*/, async (req, res) => {
     const refresh_token = refresh;
 
     // access token 검증 -> expired여야 함
-    const auth_result = jwt_util.verify(auth_token);
+    const auth_result = jwtUtil.verify(auth_token);
 
     // access token 디코딩하여 user_id 가져옴
     const decoded = jwt.decode(auth_token);
@@ -117,7 +117,7 @@ router.get('/refresh'/*, redisSocket*/, async (req, res) => {
     }
 	
     // access token의 decoding된 값에서 유저의 id를 가져와 refresh token 검증
-    const refresh_result = await jwt_util.refresh_verify(refresh_token, decoded.id);
+    const refresh_result = await jwtUtil.refreshVerify(refresh_token, decoded.id);
 
     // 재발급을 위해서는 access token이 만료되어 있어야 함
     if (auth_result.ok === false && auth_result.message === 'jwt expired') {
@@ -128,7 +128,7 @@ router.get('/refresh'/*, redisSocket*/, async (req, res) => {
 
       // access token이 만료되고, refresh token은 만료되지 않은 경우 => 새로운 access token 발급
       else {
-        const new_access_token = jwt_util.sign(decoded.id);
+        const new_access_token = jwtUtil.sign(decoded.id);
         // 새로 발급한 access token과 원래 있던 refresh token 모두 클라이언트에게 반환
         res.json({ 
           token: {
@@ -154,14 +154,14 @@ router.get('/refresh'/*, redisSocket*/, async (req, res) => {
 });
 
 /* 로그아웃 */
-router.post('/logout', auth_jwt, async_handler(async (req, res) => {
-  await redis_client.exists(req.user_id, async (err, ok) => {   // true: ok(1), false: ok(0)
+router.post('/logout', authJWT, asyncHandler(async (req, res) => {
+  await redisClient.exists(req.user_id, async (err, ok) => {   // true: ok(1), false: ok(0)
     if (err) {
       throw err;
     }
     // Redis에서 refresh token 제거
     if (ok) {
-      await redis_client.del(req.user_id);
+      await redisClient.del(req.user_id);
       return res.json({message: "로그아웃이 완료되었습니다."});
     }
     else {
@@ -171,24 +171,24 @@ router.post('/logout', auth_jwt, async_handler(async (req, res) => {
 }));
 
 /* 회원 탈퇴 */
-router.delete('/delete', auth_jwt, async_handler(async (req, res) => {
+router.delete('/delete', authJWT, asyncHandler(async (req, res) => {
   const user = await User.findOne({
     user_id: req.user_id, 
-    isDeleted: false
+    is_deleted: false
   });
   if (!user) {
     return res.status(404).json({error: "해당 사용자가 없습니다."});
   }
 
-  await redis_client.exists(req.user_id, async (err, ok) => {   // true: ok(1), false: ok(0)
+  await redisClient.exists(req.user_id, async (err, ok) => {   // true: ok(1), false: ok(0)
     if (err) {
       throw err;
     }
     // Redis에서 refresh token 제거
     if (ok) {
-      await redis_client.del(req.user_id);
+      await redisClient.del(req.user_id);
 
-      user.isDeleted = true;
+      user.is_deleted = true;
       await user.save();
 
       return res.json({message: "회원탈퇴가 완료되었습니다."});
@@ -200,10 +200,10 @@ router.delete('/delete', auth_jwt, async_handler(async (req, res) => {
 }));
 
 /* 프로필 조회 */
-router.get('/profile', auth_jwt, async_handler(async (req, res) => {
+router.get('/profile', authJWT, asyncHandler(async (req, res) => {
   const user = await User.findOne({
     user_id: req.user_id, 
-    isDeleted: false
+    is_deleted: false
   });
   
   if (!user) {
@@ -214,11 +214,11 @@ router.get('/profile', auth_jwt, async_handler(async (req, res) => {
 }));
 
 /* 비밀번호 변경 */
-router.patch('/profile', auth_jwt, async_handler(async (req, res) => {
+router.patch('/profile', authJWT, asyncHandler(async (req, res) => {
   const { password } = req.body;
   const user = await User.findOne({
     user_id: req.user_id, 
-    isDeleted: false
+    is_deleted: false
   });
 
   // 필수 입력 확인 + 공백 방지
@@ -231,7 +231,7 @@ router.patch('/profile', auth_jwt, async_handler(async (req, res) => {
     return res.status(404).json({error: "해당 사용자가 없습니다."});
   }
 
-  user.password = hash_password(password);
+  user.password = hashPassword(password);
   await user.save();
 
   res.json({message: "비밀번호 변경이 완료되었습니다", user});
