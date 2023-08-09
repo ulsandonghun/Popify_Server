@@ -7,8 +7,8 @@ router.get('/', async (req, res) => {
     try {
         const popups = await Popup.find()
            .populate('goods')
-            .populate('reviews')
-            .populate('map');
+            .populate('reviews');
+            // .populate('map');
 
         res.status(200).json(popups);
     } catch (error) {
@@ -21,8 +21,8 @@ router.get('/search/:id', async (req, res) => {
     try {
         const popup = await Popup.findById(popupId)
             .populate('goods')
-            .populate('reviews')
-            .populate('map');
+            .populate('reviews');
+            // .populate('map');
 
         if (!popup) {
             return res.status(404).json({ error: 'Popup not found' });
