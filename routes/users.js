@@ -61,7 +61,7 @@ router.get('/id/:user_id/exist', asyncHandler(async (req, res) => {
 }));
 
 /* 로그인 */
-router.post('/login'/*, redisSocket*/, asyncHandler(async (req, res) => {
+router.post('/login', asyncHandler(async (req, res) => {
   const { user_id, password } = req.body;
   const user = await User.findOne({
     user_id, 
@@ -97,7 +97,7 @@ router.post('/login'/*, redisSocket*/, asyncHandler(async (req, res) => {
 }));
 
 /* access token 재발급 */
-router.get('/refresh'/*, redisSocket*/, async (req, res) => {
+router.get('/refresh', asyncHandler(async (req, res) => {
   const { authorization, refresh } = req.headers;
 
   // access token과 refresh token 존재하는지
@@ -151,7 +151,7 @@ router.get('/refresh'/*, redisSocket*/, async (req, res) => {
   else { 
     res.status(400).json({error: "Access token과 Refresh token이 모두 필요합니다."});
   }
-});
+}));
 
 /* 로그아웃 */
 router.post('/logout', authJWT, asyncHandler(async (req, res) => {
