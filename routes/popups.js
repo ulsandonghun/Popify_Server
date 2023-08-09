@@ -172,6 +172,23 @@ router.get('/search-by-title/:title', async (req, res) => {
   }
 });
 
+// 팝업스토어 해시태그로 검색하는 API
+router.get('/search-by-hashtags/:tag', async (req, res) => {
+  const searchTag = req.params.tag;
+  console.log(searchTag);
+
+  try {
+      const popups = await Popup.find({ tags: { $in: [searchTag] } })
+          .populate('goods')
+          .populate('reviews')
+          .sort({ createdAt: -1 });
+
+      res.status(200).json(popups);
+  } catch (error) {
+      res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
 
 
 module.exports = router;
