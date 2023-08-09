@@ -49,9 +49,17 @@ const PopupSchema = new mongoose.Schema({
         type: Schema.Types.ObjectId,
         ref: 'Review',
     }],
-    map: {
-        type: Schema.Types.ObjectId,
-        ref: 'Map',
+    latitude: {
+        type: Number,
+        required: true,
+    },
+    longitude: {
+        type: Number,
+        required: true,
+    },
+    placeurl: {
+        type: String,
+        default: '',
     }
 }, {
     timestamps: true,
