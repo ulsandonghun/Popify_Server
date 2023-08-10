@@ -30,7 +30,7 @@ router.get('/search/:id', async (req, res) => {
 
         res.status(200).json(popup);
     } catch (error) {
-        res.status(500).json({ error: 'Internal syj erver error' });
+        res.status(500).json({ error: 'Internal 상세조회 erver error' });
     }
 });
 // 리뷰의 갯수순으로 팝업 정보를 정렬하는 API 엔드포인트
@@ -159,6 +159,7 @@ router.get('/latest', async (req, res) => {
 //제목을 검색하여 최신순으로 반환합니다.
 router.get('/search', async (req, res) => {
   const searchCorporation = req.query.corporation;
+  console.log(searchCorporation);
 
   try {
     const popups = await Popup.find({ corporation: { $regex: searchCorporation, $options: 'i' } })
@@ -168,12 +169,12 @@ router.get('/search', async (req, res) => {
 
     res.status(200).json(popups);
   } catch (error) {
-    res.status(500).json({ error: 'Internal server error' });
+    res.status(500).json({ error: 'Internal 제목검색server error' });
   }
 });
 
 // 팝업스토어 해시태그로 검색하는 API
-router.get('/search', async (req, res) => {
+router.get('/search-tag', async (req, res) => {
   const searchTag = req.query.tag; // req.query를 사용하여 URL 파라미터 가져오기
   console.log(searchTag);
 
@@ -185,7 +186,7 @@ router.get('/search', async (req, res) => {
 
     res.status(200).json(popups);
   } catch (error) {
-    res.status(500).json({ error: 'Internal server error' });
+    res.status(500).json({ error: 'Internal se태그검색rver error' });
   }
 });
 
