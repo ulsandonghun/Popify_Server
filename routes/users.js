@@ -154,7 +154,7 @@ router.get('/refresh', asyncHandler(async (req, res) => {
 }));
 
 /* 로그아웃 */
-router.post('/logout', authJWT, asyncHandler(async (req, res) => {
+router.get('/logout', authJWT, asyncHandler(async (req, res) => {
   await redisClient.exists(req.user_id, async (err, ok) => {   // true: ok(1), false: ok(0)
     if (err) {
       throw err;
