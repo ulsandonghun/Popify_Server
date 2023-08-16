@@ -19,7 +19,7 @@ catch(error){
 // router.get('/:id', async (req, res, next) => {
 //   const id = req.params.id;
 //   try {
-//     const review = await Review.findById(id);
+//     const review git = await Review.findById(id);
 //     if (review) {
 //       res.status(200).json(review);
 //     } else {
@@ -64,13 +64,17 @@ router.delete('/:id', async (req, res, next) => {
   const id = req.params.id;
 
   try {
+    console.log('Requested ID:', id); // ID 값을 출력
     const deletedReview = await Review.findByIdAndDelete(id);
+    console.log('Deleted Review:', deletedReview); // 삭제된 리뷰를 출력
+
     if (deletedReview) {
       res.json({ result: 'success' });
     } else {
       res.status(404).json({ message: '삭제할 리뷰를 찾을 수 없습니다.' });
     }
   } catch (error) {
+    console.error('Error:', error); // 에러 메시지 출력
     next(error);
   }
 });

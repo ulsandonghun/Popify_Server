@@ -14,9 +14,5 @@
     "jade": "~1.11.0",
     "mongoose": "^7.4.2",
     "morgan": "~1.9.1"
-  },
-  "main": "app.js",
-  "author": "",
-  "license": "ISC",
-  "description": ""
+  }
 }
