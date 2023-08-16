@@ -1,16 +1,69 @@
 const express = require('express');
 const router = express.Router();
-const Review = require('../models/Review');
 
+const Review =require('../models/Review');
 
-router.get('/', async (req, res, next) => {
-    try {
-      const goods = await Review.find(); // 또는 필요한 데이터 조회 작업
-      res.json(goods);
-    } catch (error) {
-      next(error);
-    }
-  });
-  
+// 리뷰 목록을 가져오는 API 엔드포인트
+router.get('/', async(req, res,next) => {
+  try{
+    const reviews = await Review.find();
+    res.status(200).json(reviews);
+  }
+  catch(error){
+    res.status(500).json({error});
+  }
+});
  
-  module.exports = router;
+// 리뷰 상세 조회
+router.get('/:id', async (req, res, next) => {
+  const id = req.params.id;
+  try {
+    const review = await Review.findById(id);
+    if (review) {
+      res.status(200).json(review);
+    } else {
+      res.status(404).json({ message: '리뷰를 찾을 수 없습니다.' });
+    }
+  } catch (error) {
+    next(error);
+  }
+});
+
+// 리뷰 생성
+router.post('/', async (req, res, next) => {
+  const { rate, contents, review_img, user, popup } = req.body;
+  try {
+    const newReview = await Review.create({
+      rate,
+      contents,
+      review_img,
+      user,
+      popup
+    });
+    res.status(201).json(newReview);
+  } catch (error) {
+    next(error);
+  }
+});
+
+// 리뷰 삭제
+router.delete('/:id', async (req, res, next) => {
+  const id = req.params.id;
+
+  try {
+    console.log('Requested ID:', id); // ID 값을 출력
+    const deletedReview = await Review.findByIdAndDelete(id);
+    console.log('Deleted Review:', deletedReview); // 삭제된 리뷰를 출력
+
+    if (deletedReview) {
+      res.json({ result: 'success' });
+    } else {
+      res.status(404).json({ message: '삭제할 리뷰를 찾을 수 없습니다.' });
+    }
+  } catch (error) {
+    console.error('Error:', error); // 에러 메시지 출력
+    next(error);
+  }
+});
+
+module.exports = router;

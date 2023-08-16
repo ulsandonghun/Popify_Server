@@ -9,10 +9,8 @@ require('dotenv').config();
 const indexRouter = require('./routes/index');
 const usersRouter = require('./routes/users');
 const popupsRouter = require('./routes/popups');
-const goodsRouter = require('./routes/goods');   // 수정된 부분
-const mapsRouter = require('./routes/maps');     // 수정된 부분
-const reviewsRouter = require('./routes/reviews'); // 수정된 부분
-
+const reviewsRouter = require('./routes/reviews');
+const goodsRouter = require('./routes/goods');
 
 const app = express();
 
@@ -35,10 +33,9 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 app.use('/', indexRouter);
 app.use('/users', usersRouter);
-app.use('/popups',popupsRouter);
-app.use('/goods',goodsRouter);   // 수정된 부분
-app.use('/maps',mapsRouter);     // 수정된 부분
-app.use('/reviews',reviewsRouter); // 수정된 부분
+app.use('/popups', popupsRouter);
+app.use('/reviews', reviewsRouter);
+app.use('/goods', goodsRouter);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {

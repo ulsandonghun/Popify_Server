@@ -1,16 +1,16 @@
 const express = require('express');
 const router = express.Router();
-const Goods = require('../models/Goods');
 
+const Goods = require('../models/Goods'); 
 
+// 굿즈 목록을 조회하는 API 엔드포인트
 router.get('/', async (req, res, next) => {
     try {
-      const goods = await Goods.find(); // 또는 필요한 데이터 조회 작업
-      res.json(goods);
+        const goods = await Goods.find(); 
+        res.status(200).json(goods);
     } catch (error) {
-      next(error);
+        res.status(500).json({ error: 'error' });
     }
-  });
-  
-  
-  module.exports = router;
+});
+
+module.exports = router;
