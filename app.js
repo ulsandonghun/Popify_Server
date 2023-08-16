@@ -8,13 +8,14 @@ require('dotenv').config();
 
 const indexRouter = require('./routes/index');
 const usersRouter = require('./routes/users');
+const popupsRouter = require('./routes/popups');
 const reviewsRouter = require('./routes/reviews');
 const goodsRouter = require('./routes/goods');
 
 const app = express();
 
 // mongoose setup
-mongoose.connect(process.env.MONGO_URL);
+mongoose.connect(process.env.MONGODB_URL);
 
 mongoose.connection.on("connected", () => {
   console.log("Successfully connected to MongoDB");
@@ -32,9 +33,9 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 app.use('/', indexRouter);
 app.use('/users', usersRouter);
+app.use('/popups', popupsRouter);
 app.use('/reviews', reviewsRouter);
 app.use('/goods', goodsRouter);
-
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
