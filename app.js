@@ -11,6 +11,7 @@ const usersRouter = require('./routes/users');
 const popupsRouter = require('./routes/popups');
 const reviewsRouter = require('./routes/reviews');
 const goodsRouter = require('./routes/goods');
+const s3Router=require('./routes/s3');
 
 const app = express();
 
@@ -36,6 +37,7 @@ app.use('/users', usersRouter);
 app.use('/popups', popupsRouter);
 app.use('/reviews', reviewsRouter);
 app.use('/goods', goodsRouter);
+app.use('/s3',s3Router);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
