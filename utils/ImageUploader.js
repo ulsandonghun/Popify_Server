@@ -13,7 +13,7 @@ AWS.config.update({
 
 const s3 = new AWS.S3()
 
-const allowedExtensions=['.png','.jpg','.jpeg','.bmp']
+const allowedExtensions=['.png','.jpg','.jpeg','.bmp'];
 
 const imageUploader =multer({
 
@@ -31,5 +31,5 @@ const imageUploader =multer({
         },
         acl: 'public-read-write'
     }),
-})
+});
 module.exports = imageUploader;
