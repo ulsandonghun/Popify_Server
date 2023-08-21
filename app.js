@@ -4,6 +4,7 @@ const mongoose = require('mongoose');
 const path = require('path');
 const cookieParser = require('cookie-parser');
 const logger = require('morgan');
+const cors = require('cors');
 require('dotenv').config();
 
 const indexRouter = require('./routes/index');
@@ -11,7 +12,7 @@ const usersRouter = require('./routes/users');
 const popupsRouter = require('./routes/popups');
 const reviewsRouter = require('./routes/reviews');
 const goodsRouter = require('./routes/goods');
-const s3Router=require('./routes/s3');
+const s3Router = require('./routes/s3');
 
 const app = express();
 
@@ -21,6 +22,13 @@ mongoose.connect(process.env.MONGODB_URL);
 mongoose.connection.on("connected", () => {
   console.log("Successfully connected to MongoDB");
 })
+
+// cors 처리
+app.use(cors({
+  origin: "http://localhost:3000",  // 접근 권한을 부여하는 도메인
+  credentials: true,                // 요청에 토큰 포함시키도록 허용
+  allowedHeaders: "Content-Type"    // 허용할 HTTP 헤더 지정
+}));
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
