@@ -1,7 +1,11 @@
 const express = require('express');
 const router = express.Router();
 
+const User =require('../models/User');
 const Review =require('../models/Review');
+
+const authJWT = require('../middlewares/authJWT');
+
 
 // 리뷰 목록을 가져오는 API 엔드포인트
 router.get('/', async(req, res,next) => {
@@ -15,8 +19,14 @@ router.get('/', async(req, res,next) => {
 });
  
 // 리뷰 상세 조회
-router.get('/:id', async (req, res, next) => {
-  const id = req.params.id;
+router.get('/:id',authJWT,  async (req, res, next) => {
+  
+  const user = await User.findOne({
+    user_id: req.user_id, 
+    is_deleted: false
+  });
+  res.json({ message: '인증된 사용자만 접근 가능한 API' });
+
   try {
     const review = await Review.findById(id);
     if (review) {
@@ -30,15 +40,23 @@ router.get('/:id', async (req, res, next) => {
 });
 
 // 리뷰 생성
-router.post('/', async (req, res, next) => {
-  const { rate, contents, review_img, user, popup } = req.body;
+router.post('/:id',authJWT, async (req, res, next) => {
+
+  
+  
   try {
+    const { rate, contents, review_img} = req.body;
+    const user = await User.findOne({
+      user_id: req.user_id, 
+      is_deleted: false
+    });
+   
     const newReview = await Review.create({
       rate,
       contents,
       review_img,
-      user,
-      popup
+      user: user._id,
+      popup: req.params.id
     });
     res.status(201).json(newReview);
   } catch (error) {
@@ -47,21 +65,44 @@ router.post('/', async (req, res, next) => {
 });
 
 // 리뷰 삭제
-router.delete('/:id', async (req, res, next) => {
-  const id = req.params.id;
+router.delete('/:id',authJWT, async (req, res, next) => {
 
   try {
-    console.log('Requested ID:', id); // ID 값을 출력
+    const user = await User.findOne({
+      user_id: req.user_id,
+      is_deleted: false
+    });
+
+    if (!user) {
+      res.status(401).json({ message: '인증된 사용자만 접근 가능한 API' });
+      return;
+    }
+
+    const id = req.params.id;  
+
+    const review = await Review.findById(id);
+    if (!review) {
+      res.status(404).json({ message: '삭제할 리뷰를 찾을 수 없습니다.' });
+      return;
+    }
+
+    // 로그인한 사용자와 리뷰 작성자가 동일한지 확인
+    if (user.user_id !== review.user_id) {
+      res.status(403).json({ message: ' 리뷰 작성자만 삭제할 수 있습니다.' });
+      return;
+    }
+
+    console.log('Requested ID:', id);
     const deletedReview = await Review.findByIdAndDelete(id);
-    console.log('Deleted Review:', deletedReview); // 삭제된 리뷰를 출력
+    console.log('Deleted Review:', deletedReview);
 
     if (deletedReview) {
       res.json({ result: 'success' });
     } else {
-      res.status(404).json({ message: '삭제할 리뷰를 찾을 수 없습니다.' });
+      res.status(500).json({ message: '리뷰 삭제 중 오류가 발생했습니다.' });
     }
   } catch (error) {
-    console.error('Error:', error); // 에러 메시지 출력
+    console.error('Error:', error);
     next(error);
   }
 });
