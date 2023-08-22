@@ -11,13 +11,13 @@ const authJWT = (req, res, next) => {
             next();
         } 
         else {    // 검증에 실패하거나 토큰이 만료되었다면 클라이언트에게 메세지 담아서 응답
-            return res.status(401).json({
-                error: result.message,    // jwt가 만료되었다면 'jwt expired' 메시지
-            });
+            throw new Error (
+                `${result.message}`    // jwt가 만료되었다면 'jwt expired' 메시지
+            );
         }
     }
     else {
-        res.status(400).json({error: "로그인이 필요합니다."});
+        throw new Error("로그인이 필요합니다.");
     }
 };
 

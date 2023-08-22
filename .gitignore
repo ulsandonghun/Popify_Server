@@ -3,3 +3,8 @@ node_modules/
 
 # dotenv environment variable files
 .env
+
+# Popup store data file
+data.json
+goods.json
+popups.json
