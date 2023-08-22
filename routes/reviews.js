@@ -87,9 +87,8 @@ router.delete('/:id',authJWT, async (req, res, next) => {
     }
 
     // 로그인한 사용자와 리뷰 작성자가 동일한지 확인
-    if (user.user_id !== review.user_id) {
-      res.status(403).json({ message: ' 리뷰 작성자만 삭제할 수 있습니다.' });
-      return;
+    if (!user._id.equals(review.user)) {
+      return res.status(403).json({ message: ' 리뷰 작성자만 삭제할 수 있습니다.' });
     }
 
     console.log('Requested ID:', id);
