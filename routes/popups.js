@@ -18,8 +18,8 @@ router.get('/', async (req, res) => {
 });
 
 /* 팝업스토어 상세 조회 */
-router.get('/search', async (req, res) => {
-  const popupId = req.query.id;
+router.get('/search/:id', async (req, res) => {
+  const popupId = req.params.id;
 
   try {
       const popup = await Popup.findById(popupId)
@@ -33,7 +33,7 @@ router.get('/search', async (req, res) => {
 
       res.status(200).json(popup);
   } catch (error) {
-      res.status(500).json({ error: 'Internal  상세조회server error' });
+      res.status(500).json({ error: 'Internal server error' });
   }
 });
 
