@@ -18,23 +18,23 @@ router.get('/', async (req, res) => {
 });
 
 /* 팝업스토어 상세 조회 */
-router.get('/search/:id', async (req, res) => {
-    const popupId = req.params.id;
+router.get('/search', async (req, res) => {
+  const popupId = req.query.id;
 
-    try {
-        const popup = await Popup.findById(popupId)
-            .populate('goods')
-            .populate('reviews');
-            // .populate('map');
+  try {
+      const popup = await Popup.findById(popupId)
+          .populate('goods')
+          .populate('reviews');
+          // .populate('map');
 
-        if (!popup) {
-            return res.status(404).json({ error: 'Popup not found' });
-        }
+      if (!popup) {
+          return res.status(404).json({ error: 'Popup not found' });
+      }
 
-        res.status(200).json(popup);
-    } catch (error) {
-        res.status(500).json({ error: 'Internal server error' });
-    }
+      res.status(200).json(popup);
+  } catch (error) {
+      res.status(500).json({ error: 'Internal  상세조회server error' });
+  }
 });
 
 /* 팝업스토어 인기순(리뷰 개수 많은 순)으로 정렬하여 조회 */
