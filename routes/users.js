@@ -204,7 +204,7 @@ router.get('/profile', authJWT, asyncHandler(async (req, res) => {
 }));
 
 /* 비밀번호 변경 */
-router.patch('/profile', authJWT, asyncHandler(async (req, res) => {
+router.put('/profile', authJWT, asyncHandler(async (req, res) => {
   const { password } = req.body;
   const user = await User.findOne({
     user_id: req.user_id, 
