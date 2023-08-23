@@ -1,31 +1,27 @@
 const express = require('express');
 const router = express.Router();
 
-const User =require('../models/User');
 const Review =require('../models/Review');
+const User = require('../models/User');
 const Popup = require('../models/Popup');
 
 const authJWT = require('../middlewares/authJWT');
 
-
-// 리뷰 목록을 가져오는 API 엔드포인트
-router.get('/', async(req, res,next) => {
-  try{
+/* 리뷰 전체 목록 조회 */
+router.get('/', async (req, res, next) => {
+  try {
     const reviews = await Review.find();
     res.status(200).json(reviews);
-  }
-  catch(error){
-    res.status(500).json({error});
+  } catch(error) {
+    next(error);
   }
 });
  
-
-
-// 팝업스토어의 리뷰 목록을 조회하는 API 엔드포인트
+/* 팝업스토어별 리뷰 목록 조회 */
 router.get('/popups/:popupId', async (req, res, next) => {
-  const popupId = req.params.popupId;
-
   try {
+    const popupId = req.params.popupId;
+
     // 팝업스토어 ID로 해당 팝업 정보 조회
     const popup = await Popup.findById(popupId);
 
@@ -36,12 +32,12 @@ router.get('/popups/:popupId', async (req, res, next) => {
 
     res.status(200).json(reviews);
   } catch (error) {
-    res.status(500).json({ error: '서버 오류' });
+    next(error);
   }
 });
 
-// 자신이 쓴 리뷰를 조회하는 API 엔드포인트
-router.get('/myReviews', authJWT, async (req, res, next) => {
+/* 내가 쓴 리뷰 조회 */
+router.get('/user', authJWT, async (req, res, next) => {
   try {
     const user = await User.findOne({
       user_id: req.user_id,
@@ -65,15 +61,8 @@ router.get('/myReviews', authJWT, async (req, res, next) => {
   }
 });
 
-
-
-
-
 // 리뷰 생성
-router.post('/:id',authJWT, async (req, res, next) => {
-
-  
-  
+router.post('/:popupId', authJWT, async (req, res, next) => {
   try {
     const { rate, contents, review_img} = req.body;
     const user = await User.findOne({
@@ -81,17 +70,26 @@ router.post('/:id',authJWT, async (req, res, next) => {
       is_deleted: false
     });
    
+    if (!user) {
+      res.status(401).json({ message: '인증된 사용자만 접근 가능한 API' });
+      return;
+    }
+
+    if (!await Popup.exists({_id: req.params.popupId})) {
+      return res.status(404).json({ error: "없는 팝업스토어입니다."});
+    }
+
     const newReview = await Review.create({
       rate,
       contents,
       review_img,
       user: user._id,
-      popup: req.params.id
+      popup: req.params.popupId
     });
 
     // 리뷰 생성 후, 해당 팝업의 reviews 배열에 리뷰의 ObjectId를 추가
     const updatedPopup = await Popup.findByIdAndUpdate(
-      req.params.id,
+      req.params.popupId,
       { $push: { reviews: newReview._id } },
       { new: true }
     );
@@ -102,8 +100,7 @@ router.post('/:id',authJWT, async (req, res, next) => {
 });
 
 // 리뷰 삭제
-router.delete('/:id',authJWT, async (req, res, next) => {
-
+router.delete('/:reviewId',authJWT, async (req, res, next) => {
   try {
     const user = await User.findOne({
       user_id: req.user_id,
@@ -115,7 +112,7 @@ router.delete('/:id',authJWT, async (req, res, next) => {
       return;
     }
 
-    const id = req.params.id;  
+    const id = req.params.reviewId;  
 
     const review = await Review.findById(id);
     if (!review) {
@@ -125,7 +122,7 @@ router.delete('/:id',authJWT, async (req, res, next) => {
 
     // 로그인한 사용자와 리뷰 작성자가 동일한지 확인
     if (!user._id.equals(review.user)) {
-      return res.status(403).json({ message: ' 리뷰 작성자만 삭제할 수 있습니다.' });
+      return res.status(403).json({ message: '리뷰 작성자만 삭제할 수 있습니다.' });
     }
     // 팝업스토어의 reviews 배열에서 해당 리뷰 ObjectId 제거
     const updatedPopup = await Popup.findByIdAndUpdate(
@@ -134,12 +131,10 @@ router.delete('/:id',authJWT, async (req, res, next) => {
       { new: true }
     );
 
-    console.log('Requested ID:', id);
     const deletedReview = await Review.findByIdAndDelete(id);
-    console.log('Deleted Review:', deletedReview);
 
     if (deletedReview) {
-      res.json({ result: 'success' });
+      res.json({ result: '삭제 성공' });
     } else {
       res.status(500).json({ message: '리뷰 삭제 중 오류가 발생했습니다.' });
     }
