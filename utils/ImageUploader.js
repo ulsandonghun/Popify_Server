@@ -40,6 +40,7 @@ function getContentType(filename) {
     const extension = path.extname(filename);
     switch (extension) {
         case '.png':
+        case '.PNG':
             return 'image/png';
         case '.jpg':
         case '.jpeg':
