@@ -29,7 +29,7 @@ router.get('/user', authJWT, async (req, res, next) => {
       return res.status(401).json({ message: '자신의 리뷰만 접근 가능한 API' });
     }
 
-    const reviews = await Review.find({ user: user._id });
+    const reviews = await Review.find({ user: user._id }).populate('popup', 'corporation');
 
     if (reviews === null) {
       return res.status(200).json({ message: '리뷰가 없습니다.' });
