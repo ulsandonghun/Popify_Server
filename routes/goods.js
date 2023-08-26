@@ -2,7 +2,6 @@ const express = require('express');
 const router = express.Router();
 
 const Goods = require('../models/Goods'); 
-const Popup = require('../models/Popup');
 
 /* 굿즈 전체 목록 조회 */
 router.get('/', async (req, res) => {
