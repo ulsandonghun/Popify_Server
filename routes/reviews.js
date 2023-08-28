@@ -10,7 +10,8 @@ const authJWT = require('../middlewares/authJWT');
 /* 리뷰 전체 목록 조회 */
 router.get('/', async (req, res, next) => {
   try {
-    const reviews = await Review.find();
+    const reviews = await Review.find()
+      .lean();
     res.status(200).json(reviews);
   } catch(error) {
     next(error);
@@ -29,7 +30,9 @@ router.get('/user', authJWT, async (req, res, next) => {
       return res.status(401).json({ message: '자신의 리뷰만 접근 가능한 API' });
     }
 
-    const reviews = await Review.find({ user: user._id }).populate('popup', 'corporation');
+    const reviews = await Review.find({ user: user._id })
+      .populate('popup', 'corporation')
+      .lean();
 
     if (reviews === null) {
       return res.status(200).json({ message: '리뷰가 없습니다.' });
