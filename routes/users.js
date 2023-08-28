@@ -78,7 +78,7 @@ router.post('/login', asyncHandler(async (req, res) => {
   const access_token = jwtUtil.sign(user_id);
   const refresh_token = jwtUtil.refresh();
   
-  // 발급한 refresh token을 redis에 key를 user의 id로 하여 저장
+  // 발급한 refresh token을 redis에 key를 user의 아이디로 하여 저장
   redisClient.set(user_id, refresh_token);
   res.json({
     user,

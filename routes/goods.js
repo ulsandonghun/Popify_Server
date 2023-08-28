@@ -6,7 +6,8 @@ const Goods = require('../models/Goods');
 /* 굿즈 전체 목록 조회 */
 router.get('/', async (req, res, next) => {
     try {
-        const goods = await Goods.find(); 
+        const goods = await Goods.find()
+            .lean(); 
         res.status(200).json(goods);
     } catch (error) {
         next(error);
@@ -17,8 +18,8 @@ router.get('/', async (req, res, next) => {
 router.get('/sort/reviewCount', async (req, res, next) => {
   try {
       const goods = await Goods.find()
-          .populate('popup', 'corporation reviews') 
-          .lean();
+            .populate('popup', 'corporation reviews') 
+            .lean();
       // 리뷰 개수 많은 순으로 정렬
       goods.sort((a, b) => b.popup.reviews.length - a.popup.reviews.length);
 
